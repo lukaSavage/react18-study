@@ -1,0 +1,26 @@
+{
+  "name": "react18-study",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite --force"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukaSavage/react18-study.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lukaSavage/react18-study/issues"
+  },
+  "homepage": "https://github.com/lukaSavage/react18-study#readme",
+  "dependencies": {
+    "@babel/core": "^7.22.1",
+    "@babel/plugin-transform-react-jsx": "^7.22.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.3.9"
+  }
+}
