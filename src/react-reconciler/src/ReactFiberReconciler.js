@@ -3,11 +3,13 @@
  * @Author: lukasavage
  * @Date: 2023-05-28 15:59:58
  * @LastEditors: lukasavage
- * @LastEditTime: 2023-06-01 22:08:47
+ * @LastEditTime: 2023-06-03 16:35:46
  * @FilePath: \react18-study\src\react-reconciler\src\ReactFiberReconciler.js
  */
 import { createFiberRoot } from './ReactFiberRoot';
 import { createUpdate, enqueueUpdate } from './ReactFiberClassUpdateQueue'
+import { scheduleUpdateOnFiber } from './ReactFiberWorkLoop'
+
 export function createContainer(containerInfo) {
     return createFiberRoot(containerInfo);
 }
@@ -24,6 +26,9 @@ export function updateContainer(element, container) {
     const update = createUpdate();
     // 要更新的虚拟DOM
     update.payload = { element };
-    // 把此更新对象添加到current这个根Fiber的更新队列上去
-    enqueueUpdate(current, update);
+    // 把此更新对象添加到current这个根Fiber的更新队列上去，然后返回根节点
+    const root = enqueueUpdate(current, update);
+    console.log('root', root);
+    // 调度更新
+    scheduleUpdateOnFiber(root);
 }

@@ -1,9 +1,9 @@
 /*
- * @Descripttion: 
+ * @Descripttion:
  * @Author: lukasavage
  * @Date: 2023-05-28 21:06:42
  * @LastEditors: lukasavage
- * @LastEditTime: 2023-05-29 21:48:47
+ * @LastEditTime: 2023-06-03 17:23:04
  * @FilePath: \react18-study\src\react-reconciler\src\ReactFiber.js
  */
 import { HostRoot } from './ReactWorkTags';
@@ -40,7 +40,7 @@ export function FiberNode(tag, pendingProps, key) {
     // 自身副作用的标识，表示要针对此fiber节点的进行何种操作
     this.flags = NoFlags; // 自己的副作用
     // 子节点对应的副作用使用标识，主要是为了提升性能(eg:如果副作用标识是0，那么后面的子节点就不用递归计算了)
-    this.subtreeFlags = NoFlags; 
+    this.subtreeFlags = NoFlags;
     // 替身(相当于使用了双缓存技术或者说是预加载技术)
     this.alternate = null;
 }
@@ -51,4 +51,31 @@ export function createFiber(tag, pendingProps, key) {
 
 export function createHostRootFiber() {
     return createFiber(HostRoot);
+}
+
+/**
+ * 基于老的fiber和新的属性创建新的fiber
+ * @param {*} current
+ * @param {*} pendingProps
+ */
+export function createWorkInProgress(current, pendingProps) {
+    let workInProgress = current.alternate;
+    if (workInProgress === null) {
+        workInProgress = createFiber(current.tag, pendingProps, current.key);
+        workInProgress.stateNode = current.stateNode;
+        workInProgress.alternate = current;
+        current.alternate = workInProgress;
+    } else {
+        workInProgress.pendingProps = pendingProps;
+        workInProgress.type = current.type;
+        workInProgress.flags = NoFlags;
+        workInProgress.subtreeFlags = NoFlags;
+    }
+    workInProgress.child = current.child;
+    workInProgress.memoizedProps = current.memoizedProps;
+    workInProgress.memoizedState = current.memoizedState;
+    workInProgress.updateQueue = current.updateQueue;
+    workInProgress.sibling = current.sibling;
+    workInProgress.index = current.index;
+    return workInProgress;
 }
