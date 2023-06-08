@@ -1,11 +1,11 @@
 import logger from 'shared/logger'
 import { HostText } from './ReactWorkTags';
-
+import { processUpdateQueue } from './ReactFiberConcurrentUpdates'
 
 function updateHostRoot(current, workInProgress) {
     // 需要知道它的自虚拟DOM,知道它的儿子的虚拟DOM信息
     processUpdateQueue(workInProgress); // workInProgress.memoizedState={element}
-    const nextState = workInProgres.memoizedState;
+    const nextState = workInProgress.memoizedState;
     const nextChildren = nextState.element;
     // 协调子节点 DOM-DIFF算法
     reconcileChildren(current, workInProgress, nextChildren);
