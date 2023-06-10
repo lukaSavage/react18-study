@@ -8,6 +8,7 @@
  */
 
 import { markUpdateLaneFromFiberToRoot } from './ReactFiberConcurrentUpdates';
+import assign from 'shared/assign'
 
 export const UpdateState = 0;
 
@@ -66,7 +67,9 @@ export function processUpdateQueue(workInProgress) {
             newState = getStateFromUpdate(update, newState);
             update = update.next;
         }
+        console.log('newState==>', newState); // payload { element: ···(vdom) }
         // 把最终计算到的状态赋值给memoizedState;
+        workInProgress.memoizedState = newState;
     }
 }
 
@@ -76,5 +79,11 @@ export function processUpdateQueue(workInProgress) {
  * @param {*} prevState
  */
 function getStateFromUpdate(update, prevState) {
-    
+    switch (update.tag) {
+        case UpdateState:
+            const { payload } = update;
+            return assign({}, prevState, payload)
+        default:
+            break;
+    }
 }

@@ -6,7 +6,7 @@
  * @LastEditTime: 2023-06-03 17:23:04
  * @FilePath: \react18-study\src\react-reconciler\src\ReactFiber.js
  */
-import { HostRoot } from './ReactWorkTags';
+import { HostComponent, HostRoot, HostText, IndeterminateComponent } from './ReactWorkTags';
 import { NoFlags } from './ReactFiberFlags';
 
 /**
@@ -43,6 +43,8 @@ export function FiberNode(tag, pendingProps, key) {
     this.subtreeFlags = NoFlags;
     // 替身(相当于使用了双缓存技术或者说是预加载技术)
     this.alternate = null;
+    // 默认索引值
+    this.index = 0;
 }
 
 export function createFiber(tag, pendingProps, key) {
@@ -78,4 +80,29 @@ export function createWorkInProgress(current, pendingProps) {
     workInProgress.sibling = current.sibling;
     workInProgress.index = current.index;
     return workInProgress;
+}
+
+/**
+ * 根据虚拟DOM创建Fiber节点
+ * @param {*} element
+ */
+export function createFiberFromElement(element) {
+    const { type, key, props: pendingProps } = element;
+    return createFiberFromTypeAndProps(type, key, pendingProps);
+}
+
+function createFiberFromTypeAndProps(type, key, pendingProps) {
+    // 先给定一个未知道的类型
+    const tag = IndeterminateComponent;
+    if (typeof type === 'string') {
+        tag = HostComponent;
+    }
+
+    const fiber = createFiber(tag, pendingProps, key);
+    return fiber;
+}
+
+export function createFiberFromText(content) {
+    return createFiber(HostText, content, null);
+
 }

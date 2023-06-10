@@ -1,7 +1,7 @@
 import { scheduleCallback } from 'scheduler';
 import { createWorkInProgress } from './ReactFiber';
-
-import { beginWork } from './ReactFiberBeginWork'
+import { beginWork } from './ReactFiberBeginWork';
+import { completeWork } from './ReactFiberCompleteWork';
 
 let workInProgress = null;
 /**
@@ -44,6 +44,10 @@ function workLoopSync() {
     }
 }
 
+/**
+ * 执行一个工作单元
+ * @param {*} unitOfWork
+ */
 function performUnitOfWork(unitOfWork) {
     // 获取新的fiber对应的老fiber
     const current = unitOfWok.alternate;
@@ -51,11 +55,31 @@ function performUnitOfWork(unitOfWork) {
     const next = beginWork(current, unitOfWork);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
     if (next === null) {
-        workInProgress = null;
         // 如果没有子节点表示当前的fiber已经完成了
         completeUnitOfWork(unitOfWork);
     } else {
         // 如果有子节点，就让子节点成为下一个工作单元
         workInProgress = next;
     }
+}
+
+function completeUnitOfWork(unitOfWork) {
+    let completedWork = unitOfWork;
+    do {
+        const current = completedWork.alternate;
+        const returnFiber = completedWork.return;
+        // 执行此fiber的完成工作
+        completedWork(current, completedWork);
+        // 如果有弟弟，就构建弟弟对应的fiber子链表
+        const siblingFiber = completeWork.sibling;
+        if (siblingFiber !== null) {
+            workInProgress = siblingFiber;
+            return;
+        }
+
+        // 如果没有弟弟，说明这是当期那完成的就是父fiber的最后一个节点
+        // 也就是华硕一个父fiber，所有的子fiber全部完成了
+        completeWork = returnFiber;
+        workInProgress = completedWork;
+    } while (completeWork !== null);
 }
