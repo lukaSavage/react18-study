@@ -1,6 +1,6 @@
 import logger, { indent } from 'shared/logger';
 import { HostText } from './ReactWorkTags';
-import { processUpdateQueue } from './ReactFiberConcurrentUpdates';
+import { processUpdateQueue } from './ReactFiberClassUpdateQueue';
 import { mountChildFibers, reconcileChildFibers } from './ReactChildFiber';
 import { shouldSetTextContent } from 'react-dom-bindings/src/ReactDOMHostConfig';
 

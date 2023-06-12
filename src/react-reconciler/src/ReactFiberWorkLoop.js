@@ -79,7 +79,7 @@ function completeUnitOfWork(unitOfWork) {
 
         // 如果没有弟弟，说明这是当期那完成的就是父fiber的最后一个节点
         // 也就是华硕一个父fiber，所有的子fiber全部完成了
-        completeWork = returnFiber;
+        completedWork = returnFiber;
         workInProgress = completedWork;
     } while (completeWork !== null);
 }

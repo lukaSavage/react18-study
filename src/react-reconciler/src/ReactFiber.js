@@ -93,7 +93,7 @@ export function createFiberFromElement(element) {
 
 function createFiberFromTypeAndProps(type, key, pendingProps) {
     // 先给定一个未知道的类型
-    const tag = IndeterminateComponent;
+    let tag = IndeterminateComponent;
     if (typeof type === 'string') {
         tag = HostComponent;
     }
