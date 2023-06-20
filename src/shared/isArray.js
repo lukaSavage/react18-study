@@ -1,2 +1,2 @@
-const { isArray } = Object;
+const { isArray } = Array;
 export default isArray;

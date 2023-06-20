@@ -7,7 +7,7 @@ let workInProgress = null;
 /**
  * 计划更新root
  * 源码中此处有一个任务调度的功能
- * @param {*} root
+ * @param {*} root 根Fiber
  */
 export function scheduleUpdateOnFiber(root) {
     // 确保调度执行root上的更新
@@ -15,6 +15,7 @@ export function scheduleUpdateOnFiber(root) {
 }
 
 function ensureRootIsScheduled(root) {
+    // 告诉浏览器要执行此函数
     scheduleCallback(preformConcurrentWorkOnRoot.bind(null, root));
 }
 
@@ -50,13 +51,14 @@ function workLoopSync() {
  */
 function performUnitOfWork(unitOfWork) {
     // 获取新的fiber对应的老fiber
-    const current = unitOfWok.alternate;
+    const current = unitOfWork.alternate;
     // 完成当前fiber的子fiber链表构建后
     const next = beginWork(current, unitOfWork);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
     if (next === null) {
-        // 如果没有子节点表示当前的fiber已经完成了
-        completeUnitOfWork(unitOfWork);
+        workInProgress = null;
+        // todo: 如果没有子节点表示当前的fiber已经完成了
+        // completeUnitOfWork(unitOfWork);
     } else {
         // 如果有子节点，就让子节点成为下一个工作单元
         workInProgress = next;

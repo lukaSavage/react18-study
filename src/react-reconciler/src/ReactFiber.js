@@ -64,6 +64,7 @@ export function createWorkInProgress(current, pendingProps) {
     let workInProgress = current.alternate;
     if (workInProgress === null) {
         workInProgress = createFiber(current.tag, pendingProps, current.key);
+        workInProgress.type = current.type;
         workInProgress.stateNode = current.stateNode;
         workInProgress.alternate = current;
         current.alternate = workInProgress;

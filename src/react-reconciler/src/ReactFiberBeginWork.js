@@ -1,5 +1,5 @@
 import logger, { indent } from 'shared/logger';
-import { HostText } from './ReactWorkTags';
+import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
 import { processUpdateQueue } from './ReactFiberClassUpdateQueue';
 import { mountChildFibers, reconcileChildFibers } from './ReactChildFiber';
 import { shouldSetTextContent } from 'react-dom-bindings/src/ReactDOMHostConfig';
@@ -11,7 +11,7 @@ import { shouldSetTextContent } from 'react-dom-bindings/src/ReactDOMHostConfig'
  * @param {*} nextChildren 新的子虚拟DOM
  */
 function reconcileChildren(current, workInProgress, nextChildren) {
-    // 如果是新fiber没有老fiber，说明此新fiber是新创建的，它的儿子也同样是新创建的
+    // 如果此新fiber没有老fiber，说明此新fiber是新创建的，它的儿子也同样是新创建的
     if (current === null) {
         workInProgress.child = mountChildFibers(workInProgress, null, nextChildren);
     } else {
@@ -54,14 +54,15 @@ function updateHostComponent(current, workInProgress) {
  * 目标是根据新虚拟DOM构建新的fiber子链表
  * @param {*} current 老fiber
  * @param {*} workInProgress 新的fiber
+ * @returns 返回值是对应的父节点
  */
 export function beginWork(current, workInProgress) {
-    logger(" ".repeat(indent.number) + 'beginWork', workInProgress);
-    indent.number +=2;
+    logger(' '.repeat(indent.number) + 'beginWork', workInProgress);
+    indent.number += 2;
     switch (workInProgress.tag) {
-        case HostRoot:
+        case HostRoot: // 如果是跟节点
             return updateHostRoot(current, workInProgress);
-        case HostComponent:
+        case HostComponent: // 如果是标签节点span、div、h1、p等
             return updateHostComponent(current, workInProgress);
         case HostText:
             return null;

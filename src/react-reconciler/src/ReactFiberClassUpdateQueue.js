@@ -27,17 +27,22 @@ export function createUpdate() {
     const update = { tag: UpdateState };
     return update;
 }
+
 export function enqueueUpdate(fiber, update) {
     const updateQueue = fiber.updateQueue;
-    const pending = updateQueue.pending;
+    const pending = updateQueue.shared.pending;
     if (pending === null) {
         update.next = update;
     } else {
+        // 第二次更新↓(注意：这里的update2是新来的)
+        // 让update2的next指向update1的next
         update.next = pending.next;
+        // update1的next指向update2
         pending.next = update;
     }
+    // 根上的pending指向update2
     updateQueue.shared.pending = update;
-    // 返回根节点 从当前的fiber一直到根节点
+    // 返回根节点FiberRootNode 从当前的fiber一直到根节点
     // (现在还没有讲更新优先级关系)
     return markUpdateLaneFromFiberToRoot(fiber);
 }
@@ -74,6 +79,7 @@ export function processUpdateQueue(workInProgress) {
 }
 
 /**
+ * 更新状态说明state=0 update>=1 update=2 
  * 根据老状态和更新计算新状态
  * @param {*} update 更新的对象其实有很多类型
  * @param {*} prevState
