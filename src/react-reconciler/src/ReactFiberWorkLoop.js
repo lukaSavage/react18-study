@@ -56,9 +56,9 @@ function performUnitOfWork(unitOfWork) {
     const next = beginWork(current, unitOfWork);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
     if (next === null) {
-        workInProgress = null;
+        // workInProgress = null;
         // todo: 如果没有子节点表示当前的fiber已经完成了
-        // completeUnitOfWork(unitOfWork);
+        completeUnitOfWork(unitOfWork);
     } else {
         // 如果有子节点，就让子节点成为下一个工作单元
         workInProgress = next;
@@ -68,12 +68,13 @@ function performUnitOfWork(unitOfWork) {
 function completeUnitOfWork(unitOfWork) {
     let completedWork = unitOfWork;
     do {
+        debugger
         const current = completedWork.alternate;
         const returnFiber = completedWork.return;
         // 执行此fiber的完成工作
-        completedWork(current, completedWork);
+        completeWork(current, completedWork);
         // 如果有弟弟，就构建弟弟对应的fiber子链表
-        const siblingFiber = completeWork.sibling;
+        const siblingFiber = completedWork.sibling;
         if (siblingFiber !== null) {
             workInProgress = siblingFiber;
             return;
@@ -83,5 +84,5 @@ function completeUnitOfWork(unitOfWork) {
         // 也就是华硕一个父fiber，所有的子fiber全部完成了
         completedWork = returnFiber;
         workInProgress = completedWork;
-    } while (completeWork !== null);
+    } while (completedWork !== null);
 }

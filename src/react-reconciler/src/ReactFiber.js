@@ -52,7 +52,7 @@ export function createFiber(tag, pendingProps, key) {
 }
 
 export function createHostRootFiber() {
-    return createFiber(HostRoot);
+    return createFiber(HostRoot, null, null);
 }
 
 /**
@@ -100,6 +100,7 @@ function createFiberFromTypeAndProps(type, key, pendingProps) {
     }
 
     const fiber = createFiber(tag, pendingProps, key);
+    fiber.type = type;
     return fiber;
 }
 

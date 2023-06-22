@@ -42,7 +42,7 @@ function updateHostComponent(current, workInProgress) {
     let nextChildren = nextProps.children;
     // 判断当前虚拟DOM它的儿子是不是一个文本独生子
     const isDirectTextChild = shouldSetTextContent(type, nextProps);
-    // 如果是
+    // 如果是文本独生子
     if (isDirectTextChild) {
         nextChildren = null;
     }

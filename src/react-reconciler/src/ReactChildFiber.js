@@ -24,7 +24,7 @@ function createChildReconciler(shouldTrackSideEffects) {
         // 如果为true,说明要添加副作用
         if (shouldTrackSideEffects) {
             // 要在最后的提交阶段插入此节点 (React分为渲染和更新阶段)
-            newFiber.flags !== Placement;
+            newFiber.flags |= Placement;
         }
         return newFiber;
     }
@@ -59,7 +59,7 @@ function createChildReconciler(shouldTrackSideEffects) {
     }
     function reconcileChildrenArray(returnFiber, currentFirstFiber, newChildren) {
         let resultingFirstChild = null; // 返回的第一个新儿子
-        let previousNewFiber = null; // 上一个的心得fiber
+        let previousNewFiber = null; // 上一个的新的fiber
         let newIdx = 0;
         for (; newIdx < newChildren.length; newIdx++) {
             const newFiber = createChild(returnFiber, newChildren[newIdx]);
@@ -104,6 +104,6 @@ function createChildReconciler(shouldTrackSideEffects) {
 }
 
 // 有老的父fiber更新的时候用这个
-export const mountChildFibers = createChildReconciler(true);
+export const reconcileChildFibers = createChildReconciler(true);
 // 如果没有老的父fiber,初次挂在的时候用这个
-export const reconcileChildFibers = createChildReconciler(false);
+export const mountChildFibers = createChildReconciler(false);
