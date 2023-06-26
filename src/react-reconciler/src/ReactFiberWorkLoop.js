@@ -24,9 +24,9 @@ function ensureRootIsScheduled(root) {
  * @param {*} root
  */
 function preformConcurrentWorkOnRoot(root) {
-    console.log('performConcurrentWorkOnRoot', root);
     // 以同步的方式渲染根节点，初次渲染的时候，都是同步
     renderRootSync(root);
+    console.log('performConcurrentWorkOnRoot', root);
 }
 
 function prepareFreshStack(root) {
@@ -68,7 +68,6 @@ function performUnitOfWork(unitOfWork) {
 function completeUnitOfWork(unitOfWork) {
     let completedWork = unitOfWork;
     do {
-        debugger
         const current = completedWork.alternate;
         const returnFiber = completedWork.return;
         // 执行此fiber的完成工作
