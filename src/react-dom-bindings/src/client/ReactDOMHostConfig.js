@@ -1,4 +1,4 @@
-import { setInitialProperties } from './ReactDOMComponent'
+import { setInitialProperties } from './ReactDOMComponent';
 
 export function shouldSetTextContent(type, props) {
     return typeof props.children === 'string' || typeof props.children === 'number';
@@ -22,3 +22,10 @@ export function finalizeInitialChildren(domElement, type, props, hostContext) {
     setInitialProperties(domElement, type, props);
 }
 
+export function insertBefore(parentInstance, child, beforeChild) {
+    parentInstance.insertBefore(child, beforeChild);
+}
+
+export function appendChild(parentInstance, child) {
+    parentInstance.appendChild(child);
+}
