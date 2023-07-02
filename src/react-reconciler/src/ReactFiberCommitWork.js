@@ -59,7 +59,6 @@ function insertOrAppendPlacementNode(node, before, parent) {
     } else {
         // 如果node不是真实的DOM节点，获取它的大儿子
         const { child } = node;
-        debugger;
         if (child !== null) {
             insertOrAppendPlacementNode(child, before, parent); // 把大儿子添加到父亲DOM节点里面去
             let { sibling } = child;
