@@ -3,7 +3,7 @@ import { FunctionComponent, HostComponent, HostRoot, HostText, IndeterminateComp
 import { processUpdateQueue } from './ReactFiberClassUpdateQueue';
 import { mountChildFibers, reconcileChildFibers } from './ReactChildFiber';
 import { shouldSetTextContent } from 'react-dom-bindings/src/client/ReactDOMHostConfig';
-import { renderWithHooks } from 'react-reconciler/src/ReactFiberHooks'
+import { renderWithHooks } from 'react-reconciler/src/ReactFiberHooks';
 
 /**
  * 根据新的虚拟DOM生成新的Fiber链表

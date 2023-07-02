@@ -1,7 +1,7 @@
 import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
 import { createFiberFromElement, createFiberFromText } from './ReactFiber';
 import { Placement } from './ReactFiberFlags';
-import isArray from 'shared/isArray'
+import isArray from 'shared/isArray';
 /**
  *
  * @param {*} shouldTrackSideEffects 是否跟踪副作用
@@ -51,7 +51,7 @@ function createChildReconciler(shouldTrackSideEffects) {
     }
     function placeChild(newFiber, newIdx) {
         newFiber.index = newIdx;
-        if(shouldTrackSideEffects) {
+        if (shouldTrackSideEffects) {
             // 如果一个fiber它的flags上有Placement,说明此节点需要创建真实DOM并且插入到父容器中
             // 如果父fiber节点是初次挂载，shouldTrackSideEffects=false, 不需要添加flags
             // 这种情况下会在完成阶段把所有的子节点全部添加到自己身上
@@ -67,9 +67,10 @@ function createChildReconciler(shouldTrackSideEffects) {
             if (newFiber === null) continue;
             placeChild(newFiber, newIdx);
             // 如果previousNewFiber为null, 说明这是第一个fiber
-            if(previousNewFiber === null) {
+            if (previousNewFiber === null) {
                 resultingFirstChild = newFiber; // 这个newFiber就是大儿子
-            } else { // 否则说明不是大儿子，就把这个newFiber添加上一个子节点后面
+            } else {
+                // 否则说明不是大儿子，就把这个newFiber添加上一个子节点后面
                 previousNewFiber.sibling = newFiber;
             }
             // 让newFiber成为最后一个或者说上一个子fiber

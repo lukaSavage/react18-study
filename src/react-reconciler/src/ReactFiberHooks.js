@@ -1,4 +1,3 @@
-
 /**
  * 渲染函数组件
  * @param {*} current 老fiber

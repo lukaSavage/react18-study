@@ -123,11 +123,11 @@ function printFinishedWork(fiber) {
 }
 
 function getFlags(flags) {
-    if(flags === Placement) {
+    if (flags === Placement) {
         return '插入';
     }
-    if(flags === Update) {
-        return '更新'
+    if (flags === Update) {
+        return '更新';
     }
     return flags;
 }

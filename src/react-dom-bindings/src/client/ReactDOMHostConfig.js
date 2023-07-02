@@ -23,7 +23,7 @@ export function finalizeInitialChildren(domElement, type, props, hostContext) {
 }
 
 /**
- * 
+ *
  * @param {*} parentInstance 父DOM节点
  * @param {*} child 子DOM节点
  * @param {*} beforeChild 插入到谁的前面，它也是一个DOM节点

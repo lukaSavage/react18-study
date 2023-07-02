@@ -1,6 +1,11 @@
 import logger, { indent } from 'shared/logger';
 import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
-import { createTextInstance, createInstance, appendInitialChild, finalizeInitialChildren } from 'react-dom-bindings/src/client/ReactDOMHostConfig';
+import {
+    createTextInstance,
+    createInstance,
+    appendInitialChild,
+    finalizeInitialChildren,
+} from 'react-dom-bindings/src/client/ReactDOMHostConfig';
 import { NoFlags } from './ReactFiberFlags';
 
 /**
@@ -22,7 +27,7 @@ function appendAllChildren(parent, workInProgress) {
         }
 
         if (node === workInProgress) return;
-        
+
         // 如果当前的节点没有弟弟
         while (node.sibling === null) {
             // 如果node.return 指向为顶级父fiber了，直接跳出
@@ -32,7 +37,6 @@ function appendAllChildren(parent, workInProgress) {
         }
         node = node.sibling;
     }
-
 }
 
 /**

@@ -1,5 +1,5 @@
 import { createHostRootFiber } from './ReactFiber';
-import { initialUpdateQueue } from './ReactFiberClassUpdateQueue'
+import { initialUpdateQueue } from './ReactFiberClassUpdateQueue';
 
 function FiberRootNode(containerInfo) {
     this.containerInfo = containerInfo; // containerInfo ==> div#root

@@ -8,7 +8,7 @@
  */
 
 import { markUpdateLaneFromFiberToRoot } from './ReactFiberConcurrentUpdates';
-import assign from 'shared/assign'
+import assign from 'shared/assign';
 
 export const UpdateState = 0;
 
@@ -79,7 +79,7 @@ export function processUpdateQueue(workInProgress) {
 }
 
 /**
- * 更新状态说明state=0 update>=1 update=2 
+ * 更新状态说明state=0 update>=1 update=2
  * 根据老状态和更新计算新状态
  * @param {*} update 更新的对象其实有很多类型
  * @param {*} prevState
@@ -88,7 +88,7 @@ function getStateFromUpdate(update, prevState) {
     switch (update.tag) {
         case UpdateState:
             const { payload } = update;
-            return assign({}, prevState, payload)
+            return assign({}, prevState, payload);
         default:
             break;
     }

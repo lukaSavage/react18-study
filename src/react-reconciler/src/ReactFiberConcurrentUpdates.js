@@ -1,4 +1,4 @@
-import { HostRoot } from "./ReactWorkTags";
+import { HostRoot } from './ReactWorkTags';
 
 /**
  * 本来此方法要处理更新优先级的问题
@@ -7,12 +7,12 @@ import { HostRoot } from "./ReactWorkTags";
 export function markUpdateLaneFromFiberToRoot(sourceFiber) {
     let node = sourceFiber; // 当前fiber
     let parent = sourceFiber.return; // 当期fiber父fiber
-    while(parent !== null) {
+    while (parent !== null) {
         node = parent;
         parent = parent.return;
     }
     // 一直回溯到根fiber
-    if(node.tag === HostRoot) {
+    if (node.tag === HostRoot) {
         // 直接返回FiberRootNode
         return node.stateNode;
     }

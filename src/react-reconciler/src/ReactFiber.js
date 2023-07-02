@@ -106,5 +106,4 @@ function createFiberFromTypeAndProps(type, key, pendingProps) {
 
 export function createFiberFromText(content) {
     return createFiber(HostText, content, null);
-
 }
