@@ -43,7 +43,6 @@ function appendAllChildren(parent, workInProgress) {
 export function completeWork(current, workInProgress) {
     indent.number -= 2;
     logger(' '.repeat(indent.number) + 'completeWork', workInProgress);
-    console.log('-----------', workInProgress);
     const newProps = workInProgress.pendingProps;
     switch (workInProgress.tag) {
         case HostRoot: // 代表原生节点

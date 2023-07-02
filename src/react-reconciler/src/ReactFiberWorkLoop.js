@@ -2,8 +2,9 @@ import { scheduleCallback } from 'scheduler';
 import { createWorkInProgress } from './ReactFiber';
 import { beginWork } from './ReactFiberBeginWork';
 import { completeWork } from './ReactFiberCompleteWork';
-import { MutationMask, NoFlags } from './ReactFiberFlags';
+import { MutationMask, NoFlags, Placement, Update } from './ReactFiberFlags';
 import { commitMutationEffectsOnFiber } from './ReactFiberCommitWork';
+import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
 
 let workInProgress = null;
 /**
@@ -37,12 +38,13 @@ function preformConcurrentWorkOnRoot(root) {
 
 function commitRoot(root) {
     const { finishedWork } = root;
+    printFinishedWork(finishedWork);
     // 先判断根fiber子树有没有副作用
     const subtreeHasEffects = (finishedWork.subtreeFlags & MutationMask) !== NoFlags;
     // 再判断根fiber自己身上有没有副作用
     const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags;
     // 如果自己的副作用或者子节点有副作用就惊醒提交DOM操作
-    if(subtreeHasEffects || rootHasEffect) {
+    if (subtreeHasEffects || rootHasEffect) {
         console.log('commitRoot', finishedWork.child);
         commitMutationEffectsOnFiber(finishedWork, root);
     }
@@ -105,4 +107,40 @@ function completeUnitOfWork(unitOfWork) {
         completedWork = returnFiber;
         workInProgress = completedWork;
     } while (completedWork !== null);
+}
+
+function printFinishedWork(fiber) {
+    let child = fiber.child;
+    while (child) {
+        printFinishedWork(child);
+        child = child.sibling;
+    }
+    // 说明该fiber有副作用
+    if (fiber.flags !== 0) {
+        // console.log(fiber.flags, fiber.tag, fiber.type, fiber.memoizedProps);
+        console.log(getFlags(fiber.flags), getTag(fiber.tag), fiber.type, fiber.memoizedProps);
+    }
+}
+
+function getFlags(flags) {
+    if(flags === Placement) {
+        return '插入';
+    }
+    if(flags === Update) {
+        return '更新'
+    }
+    return flags;
+}
+
+function getTag(tag) {
+    switch (tag) {
+        case HostRoot:
+            return 'HostRoot';
+        case HostComponent:
+            return 'HostComponent';
+        case HostText:
+            return 'HostText';
+        default:
+            return tag;
+    }
 }

@@ -1,8 +1,9 @@
 import logger, { indent } from 'shared/logger';
-import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
+import { FunctionComponent, HostComponent, HostRoot, HostText, IndeterminateComponent } from './ReactWorkTags';
 import { processUpdateQueue } from './ReactFiberClassUpdateQueue';
 import { mountChildFibers, reconcileChildFibers } from './ReactChildFiber';
 import { shouldSetTextContent } from 'react-dom-bindings/src/client/ReactDOMHostConfig';
+import { renderWithHooks } from 'react-reconciler/src/ReactFiberHooks'
 
 /**
  * 根据新的虚拟DOM生成新的Fiber链表
@@ -51,6 +52,26 @@ function updateHostComponent(current, workInProgress) {
 }
 
 /**
+ * 挂载函数组件
+ * @param {*} current 老fiber
+ * @param {*} workInProgress 新的fiber
+ * @param {*} Component 组件类型，也就是函数组件的定义
+ */
+export function mountIndeterminateComponent(current, workInProgress, Component) {
+    // 拿到将要挂载的属性
+    const props = workInProgress.pendingProps;
+    // 调用函数并将props传入或得返回值
+    // const value = Component(props);
+    const value = renderWithHooks(current, workInProgress, Component, props);
+    // 变更标签类型为函数组件
+    workInProgress.tag = FunctionComponent;
+    // 提交子节点
+    reconcileChildren(current, workInProgress, value);
+    // 最后返回
+    return workInProgress.child;
+}
+
+/**
  * 目标是根据新虚拟DOM构建新的fiber子链表
  * @param {*} current 老fiber
  * @param {*} workInProgress 新的fiber
@@ -60,6 +81,8 @@ export function beginWork(current, workInProgress) {
     logger(' '.repeat(indent.number) + 'beginWork', workInProgress);
     indent.number += 2;
     switch (workInProgress.tag) {
+        case IndeterminateComponent:
+            return mountIndeterminateComponent(current, workInProgress, workInProgress.type);
         case HostRoot: // 如果是跟节点
             return updateHostRoot(current, workInProgress);
         case HostComponent: // 如果是标签节点span、div、h1、p等

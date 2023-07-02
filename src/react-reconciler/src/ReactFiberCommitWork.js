@@ -1,6 +1,6 @@
 import { appendChild, insertBefore } from 'react-dom-bindings/src/client/ReactDOMHostConfig';
 import { MutationMask, Placement } from './ReactFiberFlags';
-import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
+import { FunctionComponent, HostComponent, HostRoot, HostText } from './ReactWorkTags';
 
 function recursivelyTraverseMutationEffects(root, parentFiber) {
     // 如果子fiber有副作用的话
@@ -36,6 +36,7 @@ function getHostParentFiber(fiber) {
         }
         parent = parent.return;
     }
+    return parent;
 }
 
 /**
@@ -47,7 +48,7 @@ function insertOrAppendPlacementNode(node, before, parent) {
     const { tag } = node;
     // 判断此fiber对应的节点是不是真实DOM节点
     const isHost = tag === HostComponent || tag === HostText;
-    // 如果是的话直接插入
+    // 如果是原生节点的话直接插入
     if (isHost) {
         const { stateNode } = node;
         if (before) {
@@ -58,11 +59,12 @@ function insertOrAppendPlacementNode(node, before, parent) {
     } else {
         // 如果node不是真实的DOM节点，获取它的大儿子
         const { child } = node;
+        debugger;
         if (child !== null) {
-            insertOrAppendPlacementNode(node, parent); // 把大儿子添加到父亲DOM节点里面去
+            insertOrAppendPlacementNode(child, before, parent); // 把大儿子添加到父亲DOM节点里面去
             let { sibling } = child;
             while (sibling !== null) {
-                insertOrAppendPlacementNode(sibling, parent);
+                insertOrAppendPlacementNode(sibling, before, parent);
                 sibling = sibling.sibling;
             }
         }
@@ -85,13 +87,13 @@ function getHostSibling(fiber) {
         node = node.sibling;
         while (node.tag !== HostComponent && node.tag !== HostText) {
             // 如果弟弟不是原生节点也不是文本节点
-            if(node.flags & Placement) {
+            if (node.flags & Placement) {
                 continue siblings;
             } else {
                 node = node.child;
             }
         }
-        if(!(node.flags & Placement)) {
+        if (!(node.flags & Placement)) {
             return node.stateNode;
         }
     }
@@ -127,14 +129,16 @@ function commitPlacement(finishedWork) {
  */
 export function commitMutationEffectsOnFiber(finishedWork, root) {
     switch (finishedWork.tag) {
+        case FunctionComponent:
         case HostRoot:
         case HostComponent:
-        case HostText:
+        case HostText: {
             // 先遍历他们的子节点，处理他们的子节点上的副作用
             recursivelyTraverseMutationEffects(root, finishedWork);
             // 再处理自己身上的副作用
             commitReconciliationEffects(finishedWork);
             break;
+        }
         default:
             break;
     }
