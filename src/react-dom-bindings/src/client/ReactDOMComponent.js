@@ -19,7 +19,7 @@ export function setInitialDOMProperties(tag, domElement, nextProps) {
                     setTextContent(domElement, `${nextProp}`);
                 }
             } else if (nextProp !== null) {
-                setValueForProperty(domElement, nextProp);
+                setValueForProperty(domElement, propKey, nextProp);
             }
         }
     }
