@@ -90,7 +90,45 @@ function dispatchEventForPlugins(domEventName, eventSystemFlags, nativeEvent, ta
         eventSystemFlags,
         targetContainer
     );
+
+    // 开始处理派发事件
+    processDispatchQueue(dispatchQueue, eventSystemFlags);
+
     console.log('dispatchQueue', dispatchQueue);
+}
+
+function processDispatchQueue(dispatchQueue, eventSystemFlags) {
+    // 判断是否在捕获阶段
+    const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
+    for (let i = 0; i < dispatchQueue.length; i++) {
+        const { event, listeners } = dispatchQueue[i];
+        processDispatchQueueItemInOrder(event, listeners, inCapturePhase);
+    }
+}
+
+function executeDispatch(event, listener, currentTarget) {
+    // 和城市间实例currentTarget实在不断的变化的
+    // event nativeEventTarget 它的是原始的事件源，是永远不变的
+    // event currentTarget 当前的事件源，他是会随着事件回调的执行不断变化的
+    event.currentTarget = currentTarget;
+    listener(event);
+}
+
+function processDispatchQueueItemInOrder(event, dispatchListeners, inCapturePhase) {
+    if (inCapturePhase) {
+        // dispatchListeners[子, 父]
+        for (let i = dispatchListeners.length - 1; i >= 0; i--) {
+            const { listener, currentTarget } = dispatchListeners[i];
+            if (event.isPropagationStopped()) return;
+            executeDispatch(event, listener, currentTarget);
+        }
+    } else {
+        for (let i = 0; i < dispatchListeners.length; i++) {
+            const { listener, currentTarget } = dispatchListeners[i];
+            if (event.isPropagationStopped()) return;
+            executeDispatch(event, listener, currentTarget);
+        }
+    }
 }
 
 function extractEvents(
@@ -123,10 +161,14 @@ export function accumulateSinglePhaseListeners(targetFiber, reactName, nativeEve
         if (tag === HostComponent && stateNode !== null) {
             const listener = getListener(instance, reactEventName);
             if (listener !== null && listener !== undefined) {
-                listeners.push(listener);
+                listeners.push(createDispatchListener(instance, listener, stateNode));
             }
         }
         instance = instance.return;
     }
     return listeners;
+}
+
+function createDispatchListener(instance, listener, currentTarget) {
+    return { instance, listener, currentTarget };
 }

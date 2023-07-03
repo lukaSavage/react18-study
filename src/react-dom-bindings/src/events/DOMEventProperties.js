@@ -1,6 +1,7 @@
 import { registerTwoPhaseEvent } from './EventRegistry';
 
-const simpleEventPluginEvents = ['click', 'cancel', 'abort'];
+// 存储事件，如click、cancel、abort等
+const simpleEventPluginEvents = ['click'];
 
 export const topLevelEventsToReactNames = new Map();
 function registerSimpleEvent(domEventName, reactName) {
