@@ -19,10 +19,20 @@ export function precacheFiberNode(hostInst, node) {
     node[internalInstanceKey] = hostInst;
 }
 
+/**
+ * 初始化的时候保存的真实dom属性(包含onClick等事件属性)
+ * @param {*} node 
+ * @param {*} props 
+ */
 export function updateFiberProps(node, props) {
     node[internalPropsKey] = props;
 }
 
+/**
+ * 读取真实dom属性
+ * @param {*} node 
+ * @returns 
+ */
 export function getFiberCurrentPropsFromNode(node) {
     return node[internalPropsKey] || null;
 }

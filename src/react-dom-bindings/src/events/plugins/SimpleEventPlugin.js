@@ -31,6 +31,7 @@ function extractEvents(
         default:
             break;
     }
+    // 看是否为捕获阶段
     const isCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0; // 判断是否为捕获阶段
     const listeners = accumulateSinglePhaseListeners(targetInst, reactName, nativeEvent.type, isCapturePhase);
     // 如果有要执行的监听函数的话[onClickCapture, onClickCapture]=[ChildCapture, parentCapture]

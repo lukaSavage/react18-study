@@ -81,6 +81,7 @@ function dispatchEventForPlugins(domEventName, eventSystemFlags, nativeEvent, ta
     const nativeEventTarget = getEventTarget(nativeEvent);
     // 派发事件的数组(因为捕获和冒泡的关系，里面可能包含父节点或者祖辈节点的事件)
     const dispatchQueue = [];
+    // 提取事件
     extractEvents(
         dispatchQueue,
         domEventName,
@@ -107,7 +108,7 @@ function processDispatchQueue(dispatchQueue, eventSystemFlags) {
 }
 
 function executeDispatch(event, listener, currentTarget) {
-    // 和城市间实例currentTarget实在不断的变化的
+    // 合成事件实例currentTarget实在不断的变化的
     // event nativeEventTarget 它的是原始的事件源，是永远不变的
     // event currentTarget 当前的事件源，他是会随着事件回调的执行不断变化的
     event.currentTarget = currentTarget;
@@ -157,6 +158,7 @@ export function accumulateSinglePhaseListeners(targetFiber, reactName, nativeEve
     const listeners = [];
     let instance = targetFiber;
     while (instance !== null) {
+        // 从fieber中拿到真实DOM和tag类型
         const { stateNode, tag } = instance;
         if (tag === HostComponent && stateNode !== null) {
             const listener = getListener(instance, reactEventName);

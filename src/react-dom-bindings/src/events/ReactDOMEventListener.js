@@ -11,6 +11,7 @@ import { dispatchEventForPluginEventSystem } from './DOMPluginEventSystem';
  */
 export function createEventListenerWrapperWithPriority(targetContainer, domEventName, eventSystemFlags) {
     const listenerWrapper = dispatchDiscreateEvent;
+
     return listenerWrapper.bind(null, domEventName, eventSystemFlags, targetContainer);
 }
 
@@ -35,8 +36,9 @@ function dispatchDiscreateEvent(domEventName, eventSystemFlags, container, nativ
 export function dispatchEvent(domEventName, eventSystemFlags, targetContainer, nativeEvent) {
     // 1、获取事件源，他是一个真实DOM
     const nativeEventTarget = getEventTarget(nativeEvent);
-    // 2、从真实的DOM节点上获取它对应的fiber节点
+    // 2、从真实的DOM节点上获取它对应的fiber节点(为了冒泡和捕获)
     const targetInst = getClosestInstanceFromNode(nativeEventTarget);
     // 3、派发事件
+    debugger
     dispatchEventForPluginEventSystem(domEventName, eventSystemFlags, nativeEvent, targetInst, targetContainer);
 }
