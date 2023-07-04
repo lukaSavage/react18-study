@@ -36,9 +36,9 @@ function dispatchDiscreateEvent(domEventName, eventSystemFlags, container, nativ
 export function dispatchEvent(domEventName, eventSystemFlags, targetContainer, nativeEvent) {
     // 1、获取事件源，他是一个真实DOM
     const nativeEventTarget = getEventTarget(nativeEvent);
-    // 2、从真实的DOM节点上获取它对应的fiber节点(为了冒泡和捕获)
+    // 2、从真实的DOM节点上获取它对应的fiber节点(为了冒泡和捕获,通过fiber的return获取其父所有的click回调)
+    // fiber节点上有stateNode属性，对应的是真实dom，而在通过fiber创建真实dom的过程中又保存了对应的click回调，因此可以获取所有冒泡回调
     const targetInst = getClosestInstanceFromNode(nativeEventTarget);
     // 3、派发事件
-    debugger
     dispatchEventForPluginEventSystem(domEventName, eventSystemFlags, nativeEvent, targetInst, targetContainer);
 }
