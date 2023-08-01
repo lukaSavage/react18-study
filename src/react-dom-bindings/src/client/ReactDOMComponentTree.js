@@ -7,7 +7,9 @@ const internalPropsKey = '__reactProps$' + randomKey;
  */
 export function getClosestInstanceFromNode(targetNode) {
     const targetInst = targetNode[internalInstanceKey];
-    return targetInst;
+    if (targetInst) return targetInst;
+    return null;
+    // 如果真实DOM上没有fiber，就不要返回undefined,而是要返回null
 }
 
 /**
@@ -21,8 +23,8 @@ export function precacheFiberNode(hostInst, node) {
 
 /**
  * 初始化的时候保存的真实dom属性(包含onClick等事件属性)
- * @param {*} node 
- * @param {*} props 
+ * @param {*} node
+ * @param {*} props
  */
 export function updateFiberProps(node, props) {
     node[internalPropsKey] = props;
@@ -30,8 +32,8 @@ export function updateFiberProps(node, props) {
 
 /**
  * 读取真实dom属性
- * @param {*} node 
- * @returns 
+ * @param {*} node
+ * @returns
  */
 export function getFiberCurrentPropsFromNode(node) {
     return node[internalPropsKey] || null;

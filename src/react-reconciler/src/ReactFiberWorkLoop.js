@@ -5,8 +5,10 @@ import { completeWork } from './ReactFiberCompleteWork';
 import { MutationMask, NoFlags, Placement, Update } from './ReactFiberFlags';
 import { commitMutationEffectsOnFiber } from './ReactFiberCommitWork';
 import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
+import { finishQueueingConcurrentUpdates } from './ReactFiberConcurrentUpdates';
 
 let workInProgress = null;
+let workInProgressRoot = null;
 /**
  * 计划更新root
  * 源码中此处有一个任务调度的功能
@@ -18,6 +20,8 @@ export function scheduleUpdateOnFiber(root) {
 }
 
 function ensureRootIsScheduled(root) {
+    if(workInProgressRoot) return;
+    workInProgressRoot = root;
     // 告诉浏览器要执行此函数
     scheduleCallback(preformConcurrentWorkOnRoot.bind(null, root));
 }
@@ -34,6 +38,7 @@ function preformConcurrentWorkOnRoot(root) {
     // 开始进入提交阶段，就是执行副作用，修改真实DOM
     root.finishedWork = finishedWork;
     commitRoot(root);
+    workInProgressRoot = null;
 }
 
 function commitRoot(root) {
@@ -54,6 +59,8 @@ function commitRoot(root) {
 
 function prepareFreshStack(root) {
     workInProgress = createWorkInProgress(root.current, null);
+    // 完成队列的并发更新
+    finishQueueingConcurrentUpdates();
 }
 
 function renderRootSync(root) {

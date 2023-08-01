@@ -31,7 +31,8 @@ export function FiberNode(tag, pendingProps, key) {
     this.memoizedProps = null; // 已经生效的属性
 
     // 每个fiber还会有自己的状态，每一种fiber状态的类型是不一样的
-    // 类组件对应的fiber存的就是类的实例的状态，HostRoot存的就是要渲染的元素
+    // 类组件对应的fiber存的就是类的实例的状态，HostRoot存的就是要渲染的元素vdom
+    // 注意：在函数组件中，HostRoot纯的是vdom，在其他非根fiber中，存的是hooks链表
     this.memoizedState = null;
 
     // 每个fiber身上可能还有更新队列

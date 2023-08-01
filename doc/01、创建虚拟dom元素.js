@@ -7,7 +7,7 @@ const sourceCode = `
 `;
 // runtime: classic 老版本写法  automatic: 新版本写法
 const result = babel.transform(sourceCode, {
-    plugins: [['@babel/plugin-transform-react-jsx', { runtime: 'classic' }]],
+  plugins: [['@babel/plugin-transform-react-jsx', { runtime: 'classic' }]],
 });
 
 console.log(result.code);
@@ -47,3 +47,10 @@ console.log(result.code);
 
 
 */
+
+const dispatch = dispatchReducerAction.bind(null, 1, 2);
+
+function dispatchReducerAction(fiber, queue, action) {
+  console.log(fiber, queue, action);
+}
+dispatch({type: 'add', payload: 11})
