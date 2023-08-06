@@ -6,10 +6,78 @@ const { ReactCurrentDispatcher } = ReactSharedInternals;
 
 let currentlyRenderingFiber = null;
 let workInProgressHook = null;
+let currentHook = null;
 
 const HooksDispatcherOnMount = {
     useReducer: mountReducer,
 };
+
+const HooksDispatcherOnUpdate = {
+    useReducer: updateReducer,
+};
+
+/* 构建新的hook */
+function updateWorkInProgressHook() {
+    // 说明当前是第一个hook
+    if (currentHook === null) {
+        // 拿到正在渲染的老fiber
+        const current = currentlyRenderingFiber.alternate;
+        // 获取hook列表
+        currentHook = current.memoizedState;
+    } else {
+        // 如果不是新hook，指向下一个
+        /*
+            第一个currentHook:
+            {
+                memoizedState: 1111,
+                next: {
+                    memoizedState: 2222,
+                    next: null,
+                    queue: {pending: null, dispatch: ƒ}
+                }
+            }
+            
+        */
+        currentHook = currentHook.next;
+    }
+    // 根据老hook创建新hook
+    const newHook = {
+        memoizedState: currentHook.memoizedState,
+        queue: currentHook.queue,
+        next: null,
+    };
+    if (workInProgressHook === null) {
+        currentlyRenderingFiber.memoizedState = workInProgressHook = newHook;
+    } else {
+        workInProgressHook = workInProgressHook.next = newHook;
+    }
+    return workInProgressHook;
+}
+
+function updateReducer(reducer) {
+    // 获取新的hook
+    const hook = updateWorkInProgressHook();
+    // 获取新的hook的更新队列
+    const queue = hook.queue;
+    // 获取老的hook
+    const current = currentHook;
+    // 获取将要生效的更新队列
+    const pendingQueue = queue.pending;
+    // 初始化一个新的状态，取值为当前的状态
+    let newState = current.memoizedState;
+    if (pendingQueue !== null) {
+        queue.pending = null;
+        const firstUpdate = pendingQueue.next;
+        let update = firstUpdate;
+        do {
+            const action = update.action;
+            newState = reducer(newState, action);
+            update = update.next;
+        } while (update !== null && update !== firstUpdate);
+    }
+    hook.memoizedState = newState;
+    return [hook.memoizedState, queue.dispatch];
+}
 
 function mountReducer(reducer, initialArg) {
     const hook = mountWorkInProgressHooks();
@@ -68,8 +136,16 @@ function mountWorkInProgressHooks() {
  */
 export function renderWithHooks(current, workInProgress, Component, props) {
     currentlyRenderingFiber = workInProgress; // Function 组件对应的新fiber
-    ReactCurrentDispatcher.current = HooksDispatcherOnMount;
+    // 如果有老的fiber，并且有老的hook链表
+    if (current !== null && current.memoizedState !== null) {
+        ReactCurrentDispatcher.current = HooksDispatcherOnUpdate;
+    } else {
+        ReactCurrentDispatcher.current = HooksDispatcherOnMount;
+    }
     // 需要在函数组件执行前给ReactCurrentDispatcher.current赋值
     const children = Component(props);
+    currentlyRenderingFiber = null;
+    workInProgressHook = null;
+    currentHook = null;
     return children;
 }

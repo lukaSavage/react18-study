@@ -21,12 +21,18 @@ function reducer(state, action) {
 function FunctionComponent() {
     const [number, setNumber] = React.useReducer(reducer, 1111);
     const [number2, setNumber2] = React.useReducer(reducer, 2222);
-    return <button onClick={() => {
-        debugger
-        setNumber({ type: 'add', payload: 1 })
-        setNumber({ type: 'add', payload: 1 })
-        setNumber({ type: 'add', payload: 1 })
-    }}>{number}</button>;
+    return (
+        <button
+            id={Date.now()}
+            onClick={() => {
+                setNumber({ type: 'ADD', payload: 3 });
+                setNumber({ type: 'ADD', payload: 2 });
+                setNumber({ type: 'ADD', payload: 1 });
+            }}
+        >
+            {number}
+        </button>
+    );
     return (
         <h1
             onClick={e => console.log('onClick FunctionComponent')}

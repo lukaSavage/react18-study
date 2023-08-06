@@ -26,11 +26,17 @@ export function finishQueueingConcurrentUpdates() {
         if (queue !== null && update !== null) {
             const pending = queue.pending;
             if (pending === null) {
+                // 构成一个循环链表
                 update.next = update;
             } else {
                 update.next = pending.next;
                 pending.next = update;
             }
+            /* 
+                queue = {
+                    pending: update ==> { action, next: update }
+                }
+            */
             queue.pending = update;
         }
     }
@@ -54,6 +60,7 @@ function getRootForUpdatedFiber(sourceFiber) {
         node = parent;
         parent = node.return;
     }
+    // 返回FiberRootNode { containerInfo: div#root }
     return node.tag === HostRoot ? node.stateNode : null;
 }
 
