@@ -10,11 +10,53 @@ let currentHook = null;
 
 const HooksDispatcherOnMount = {
     useReducer: mountReducer,
+    useState: mountState,
 };
 
 const HooksDispatcherOnUpdate = {
     useReducer: updateReducer,
+    useState: updateState,
 };
+function baseStateReducer(state, action) {
+    return typeof action === 'function' ? action(state) : action;
+}
+function updateState() {
+    return updateReducer(baseStateReducer);
+}
+
+function mountState(initialState) {
+    // return mountReducer(baseStateReducer, initialState);
+    const hook = mountWorkInProgressHooks();
+    hook.memoizedState = initialState;
+    const queue = {
+        pending: null,
+        dispatch: null,
+        lastRenderedReducer: baseStateReducer, // 上一个reducer
+        lastRenderedState: initialState, // 上一个state
+    };
+    hook.queue = queue;
+    const dispatch = (queue.dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue));
+    return [hook.memoizedState, dispatch];
+}
+
+function dispatchSetState(fiber, queue, action) {
+    // 在每个hook里面会存放一个更新队列，更新队列是一个更新对象的循环链表update1.next = update2.next = update1
+    const update = {
+        action, // { type: 'add', payload: 1 }
+        hasEagerState: false, // 是否有急切的更新
+        eagerState: null, // 急切的更新状态
+        next: null,
+    };
+    // 当你派发动作后，立刻用上一次的状态和上一次的reducer计算新状态
+    const { lastRenderedReducer, lastRenderedState } = queue;
+    const eagerState = lastRenderedReducer(lastRenderedState, action);
+    update.hasEagerState = true;
+    update.eagerState = eagerState;
+    if (Object.is(eagerState, lastRenderedState)) return;
+    // 下面是真真正的入队更新，并调度更新逻辑
+    const root = enqueueConcurrentHookUpdate(fiber, queue, update);
+    scheduleUpdateOnFiber(root);
+}
 
 /* 构建新的hook */
 function updateWorkInProgressHook() {
@@ -70,6 +112,12 @@ function updateReducer(reducer) {
         const firstUpdate = pendingQueue.next;
         let update = firstUpdate;
         do {
+            if (update.hasEagerState) {
+                newState = update.eagerState;
+            } else {
+                const action = update.action;
+                newState = reducer(newState, action);
+            }
             const action = update.action;
             newState = reducer(newState, action);
             update = update.next;
