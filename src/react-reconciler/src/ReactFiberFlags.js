@@ -12,4 +12,4 @@ export const Update = 0b00000000000000000000000100;
 // 删除子节点
 export const ChildDeletion = 0b00000000000000000000001000;
 // 插入或者更新
-export const MutationMask = Placement | Update;
+export const MutationMask = Placement | Update | ChildDeletion;

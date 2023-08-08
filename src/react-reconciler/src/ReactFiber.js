@@ -46,6 +46,8 @@ export function FiberNode(tag, pendingProps, key) {
     this.alternate = null;
     // 默认索引值
     this.index = 0;
+    // 用于存放将要删除的子fiber
+    this.deletions = null;
 }
 
 export function createFiber(tag, pendingProps, key) {

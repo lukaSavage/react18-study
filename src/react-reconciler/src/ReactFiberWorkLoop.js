@@ -2,9 +2,9 @@ import { scheduleCallback } from 'scheduler';
 import { createWorkInProgress } from './ReactFiber';
 import { beginWork } from './ReactFiberBeginWork';
 import { completeWork } from './ReactFiberCompleteWork';
-import { MutationMask, NoFlags, Placement, Update } from './ReactFiberFlags';
+import { ChildDeletion, MutationMask, NoFlags, Placement, Update } from './ReactFiberFlags';
 import { commitMutationEffectsOnFiber } from './ReactFiberCommitWork';
-import { HostComponent, HostRoot, HostText } from './ReactWorkTags';
+import { FunctionComponent, HostComponent, HostRoot, HostText } from './ReactWorkTags';
 import { finishQueueingConcurrentUpdates } from './ReactFiberConcurrentUpdates';
 
 let workInProgress = null;
@@ -20,7 +20,7 @@ export function scheduleUpdateOnFiber(root) {
 }
 
 function ensureRootIsScheduled(root) {
-    if(workInProgressRoot) return;
+    if (workInProgressRoot) return;
     workInProgressRoot = root;
     // 告诉浏览器要执行此函数
     scheduleCallback(preformConcurrentWorkOnRoot.bind(null, root));
@@ -117,6 +117,12 @@ function completeUnitOfWork(unitOfWork) {
 }
 
 function printFinishedWork(fiber) {
+    const { flags, deletions } = fiber;
+    if ((flags & ChildDeletion) !== NoFlags) {
+        fiber.flags &= ~ChildDeletion;
+        console.log('子节点有删除' + deletions.map(fiber => `${fiber.type}#${fiber.memoizedProps.id}`).join());
+    }
+
     let child = fiber.child;
     while (child) {
         printFinishedWork(child);
@@ -125,11 +131,20 @@ function printFinishedWork(fiber) {
     // 说明该fiber有副作用
     if (fiber.flags !== 0) {
         // console.log(fiber.flags, fiber.tag, fiber.type, fiber.memoizedProps);
-        console.log(getFlags(fiber.flags), getTag(fiber.tag), fiber.type, fiber.memoizedProps);
+        console.log(
+            getFlags(fiber),
+            getTag(fiber.tag),
+            typeof fiber.type === 'function' ? fiber.type.name : fiber.type,
+            fiber.memoizedProps
+        );
     }
 }
 
-function getFlags(flags) {
+function getFlags(fiber) {
+    const { flags } = fiber;
+    if (flags === (Placement | Update)) {
+        return '移动';
+    }
     if (flags === Placement) {
         return '插入';
     }
@@ -141,6 +156,8 @@ function getFlags(flags) {
 
 function getTag(tag) {
     switch (tag) {
+        case FunctionComponent:
+            return 'FunctionComponent';
         case HostRoot:
             return 'HostRoot';
         case HostComponent:
