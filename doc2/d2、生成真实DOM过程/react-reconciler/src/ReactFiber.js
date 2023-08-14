@@ -35,7 +35,7 @@ export function FiberNode(tag, pendingProps, key) {
     this.memoizedState = null;
 
     // 每个fiber身上可能还有更新队列
-    this.undateQueue = null;
+    this.updateQueue = null;
 
     // 自身副作用的标识，表示要针对此fiber节点的进行何种操作
     this.flags = NoFlags; // 自己的副作用
