@@ -7,6 +7,7 @@ import {
     commitMutationEffectsOnFiber,
     commitPassiveUnmountEffects,
     commitPassiveMountEffects,
+    commitLayoutEffect,
 } from './ReactFiberCommitWork';
 import { FunctionComponent, HostComponent, HostRoot, HostText } from './ReactWorkTags';
 import { finishQueueingConcurrentUpdates } from './ReactFiberConcurrentUpdates';
@@ -73,6 +74,8 @@ function commitRoot(root) {
     if (subtreeHasEffects || rootHasEffect) {
         // 当DOM执行变更之后
         commitMutationEffectsOnFiber(finishedWork, root);
+        // 执行layout Effect
+        commitLayoutEffect(finishedWork, root);
         if (rootDoesHavePassiveEffects) {
             rootDoesHavePassiveEffects = false;
             rootWithPendingPassiveEffects = root;
