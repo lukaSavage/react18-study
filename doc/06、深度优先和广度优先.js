@@ -36,7 +36,7 @@ let root = {
         },
     ],
 };
-// dfs(root);
+dfs(root);
 
 /* 
 宽度优先搜索算法（又称广度优先搜索），BFS 其英文全称是 Breadth First Search
@@ -67,4 +67,4 @@ let root2 = {
         },
     ],
 };
-bfs(root);
+// bfs(root);
